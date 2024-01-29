@@ -7,12 +7,12 @@
 import {addFieldDependencies} from "@web/views/utils";
 import {Field} from "@web/views/fields/field";
 import {Widget} from "@web/views/widgets/widget";
-import {XMLParser} from "@web/core/utils/xml";
+import {visitXML, parseXML} from "@web/core/utils/xml";
 import {_lt} from "@web/core/l10n/translation";
 
 export const INFO_BOX_ATTRIBUTE = "info_box";
 
-export class GeoengineArchParser extends XMLParser {
+export class GeoengineArchParser {
     /**
      * Allow you to browse and process the xml template of the geoengine view.
      * @param {*} arch
@@ -21,14 +21,14 @@ export class GeoengineArchParser extends XMLParser {
      * @returns {Object}
      */
     parse(arch, models, modelName) {
-        const xmlDoc = this.parseXML(arch);
+        const xmlDoc = parseXML(arch);
         const templateDocs = {};
         const fieldNodes = {};
         const jsClass = xmlDoc.getAttribute("js_class");
         const activeFields = {};
         const geoengineAttr = {};
 
-        this.visitXML(xmlDoc, (node) => {
+        visitXML(xmlDoc, (node) => {
             if (["geoengine"].includes(node.tagName)) {
                 geoengineAttr.editable = Boolean(
                     Number(xmlDoc.getAttribute("editable"))

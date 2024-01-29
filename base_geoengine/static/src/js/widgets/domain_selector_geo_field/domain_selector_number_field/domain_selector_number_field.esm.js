@@ -6,14 +6,52 @@
 
 import {registry} from "@web/core/registry";
 import {_lt} from "@web/core/l10n/translation";
-import {DomainSelectorFieldInput} from "@web/core/domain_selector/fields/domain_selector_field_input";
 import {DomainSelectorFieldInputForActiveIds} from "../domain_selector_field_input_for_active_ids/domain_selector_field_input_for_active_ids.esm";
-import {DomainSelectorFieldInputWithTags} from "@web/core/domain_selector/fields/domain_selector_field_input_with_tags";
 import {onDidChange} from "../domain_selector_operators.esm";
 
 const dso = registry.category("domain_selector/operator");
 
-import {Component} from "@odoo/owl";
+import {Component, useRef} from "@odoo/owl";
+
+const parsers = registry.category("parsers");
+
+class DomainSelectorFieldInput extends Component {
+    parseValue(value) {
+        const parser = parsers.get(this.props.field.type, (value) => value);
+        try {
+            return parser(value);
+        } catch (_) {
+            return value;
+        }
+    }
+
+    onChange(ev) {
+        this.props.update({ value: this.parseValue(ev.target.value) });
+    }
+}
+DomainSelectorFieldInput.template = "base_geoengine.DomainSelectorFieldInput";
+
+class DomainSelectorFieldInputWithTags extends Component {
+    setup() {
+        this.inputRef = useRef("input");
+    }
+
+    removeTag(tagIndex) {
+        const value = [...this.props.value];
+        value.splice(tagIndex, 1);
+        this.props.update({ value });
+    }
+    addTag(value) {
+        this.props.update({ value: this.props.value.concat(value) });
+    }
+
+    onBtnClick() {
+        const value = this.inputRef.el.value;
+        this.inputRef.el.value = "";
+        this.addTag(value);
+    }
+}
+DomainSelectorFieldInputWithTags.template = "base_geoengine.DomainSelectorFieldInputWithTags";
 
 /**
  * This method is extended from DomainSelectorNumberField to add some operators
