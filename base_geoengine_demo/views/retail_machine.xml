@@ -84,7 +84,7 @@
         <field name="the_line" />
         <field name="display_name" />
         <templates>
-          <t t-name="info_box">
+          <t >
             <b>
               ID: <field name="zip_id" />
             </b>

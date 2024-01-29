@@ -1,7 +1,7 @@
 # Copyright 2011-2012 Nicolas Bessi (Camptocamp SA)
 # Copyright 2023 ACSONE SA/NV
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class NPA(models.Model):
@@ -56,9 +56,8 @@ class NPA(models.Model):
                     rec.total_sales = 0.0
             else:
                 rec.total_sales = 0.0
-
-    def name_get(self):
-        res = []
+    
+    @api.depends("name", "city")
+    def _compute_display_name(self):
         for rec in self:
-            res.append((rec.id, "%s %s" % (rec.name, rec.city)))
-        return res
+            rec.display_name = "%s %s" % (rec.name, rec.city)
